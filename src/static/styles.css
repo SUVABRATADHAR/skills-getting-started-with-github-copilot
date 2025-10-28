@@ -90,6 +90,12 @@ section h3 {
   gap: 8px;
 }
 
+/* Ensure no default bullets/indents */
+.participants-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
 .participants-list li {
   display: flex;
   align-items: center;
@@ -121,6 +127,22 @@ section h3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Delete/unregister button next to each participant */
+.delete-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #c62828;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.delete-btn:hover {
+  background-color: rgba(198, 40, 40, 0.08);
 }
 
 .form-group {
