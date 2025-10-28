@@ -23,35 +23,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
-        // Build participants HTML
-        let participantsHtml = "";
-        if (details.participants && details.participants.length > 0) {
-          participantsHtml += '<div class="participants-section">';
-          participantsHtml += '<h5 style="margin:0 0 8px 0; font-size:14px; color:#1a237e;">Participants</h5>';
-          participantsHtml += '<ul class="participants-list">';
-          details.participants.forEach((p) => {
-            const local = (typeof p === "string") ? p.split("@")[0] : String(p);
-            const initial = local.trim().charAt(0).toUpperCase() || "?";
-            participantsHtml += `
-              <li>
-                <span class="avatar">${initial}</span>
-                <span class="participant-item">${p}</span>
-              </li>
-            `;
-          });
-          participantsHtml += "</ul></div>";
-        } else {
-          participantsHtml = '<div class="participants-section"><p class="info" style="margin:0;">No participants yet</p></div>';
-        }
-
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-          ${participantsHtml}
         `;
 
+        // Build participants section programmatically so we can attach handlers
+        const participantsSection = document.createElement("div");
+        participantsSection.className = "participants-section";
+
+        const participantsHeader = document.createElement("h5");
+        participantsHeader.style.margin = "0 0 8px 0";
+        participantsHeader.style.fontSize = "14px";
+        participantsHeader.style.color = "#1a237e";
+        participantsHeader.textContent = "Participants";
+        participantsSection.appendChild(participantsHeader);
+
+        if (details.participants && details.participants.length > 0) {
+          const ul = document.createElement("ul");
+          ul.className = "participants-list";
+
+          details.participants.forEach((p) => {
+            const local = (typeof p === "string") ? p.split("@")[0] : String(p);
+            const initial = local.trim().charAt(0).toUpperCase() || "?";
+
+            const li = document.createElement("li");
+
+            const avatar = document.createElement("span");
+            avatar.className = "avatar";
+            avatar.textContent = initial;
+
+            const span = document.createElement("span");
+            span.className = "participant-item";
+            span.textContent = p;
+
+            const btn = document.createElement("button");
+            btn.className = "delete-btn";
+            btn.title = "Unregister participant";
+            btn.textContent = "✖";
+            btn.addEventListener("click", async () => {
+              await unregisterParticipant(name, p);
+            });
+
+            li.appendChild(avatar);
+            li.appendChild(span);
+            li.appendChild(btn);
+            ul.appendChild(li);
+          });
+
+          participantsSection.appendChild(ul);
+        } else {
+          const pEl = document.createElement("p");
+          pEl.className = "info";
+          pEl.style.margin = "0";
+          pEl.textContent = "No participants yet";
+          participantsSection.appendChild(pEl);
+        }
+
+        activityCard.appendChild(participantsSection);
         activitiesList.appendChild(activityCard);
 
         // Add option to select dropdown
